@@ -8,41 +8,41 @@ import (
 	go_http "github.com/leapforce-libraries/go_http"
 )
 
-type CostCenter_GetListResponse struct {
+type List_GetAllResponse struct {
 	XMLName  xml.Name `xml:"http://www.w3.org/2003/05/soap-envelope Envelope"`
 	SoapBody struct {
 		XMLName  xml.Name `xml:"Body"`
 		Response *struct {
-			XMLName xml.Name                 `xml:"CostCenter_GetListResponse"`
-			Result  CostCenter_GetListResult `xml:"CostCenter_GetListResult"`
+			XMLName xml.Name          `xml:"List_GetAllResponse"`
+			Result  List_GetAllResult `xml:"List_GetAllResult"`
 		}
 		Fault *Fault
 	}
 }
 
-type CostCenter_GetListResult struct {
-	XMLName    xml.Name     `xml:"CostCenter_GetListResult"`
-	CostCenter []CostCenter `xml:"CostCenter"`
+type List_GetAllResult struct {
+	XMLName xml.Name  `xml:"List_GetAllResult"`
+	Company []Company `xml:"Company"`
 }
 
-type CostCenter struct {
-	XMLName     xml.Name `xml:"CostCenter"`
-	Code        int64    `xml:"Code"`
-	Description string   `xml:"Description"`
-	ID          int64    `xml:"Id"`
+type Company struct {
+	XMLName             xml.Name `xml:"Company"`
+	ID                  int64    `xml:"ID"`
+	Number              int64    `xml:"Number"`
+	Name                string   `xml:"Name"`
+	LoonaangifteTijdvak string   `xml:"LoonaangifteTijdvak"`
+	KvkNr               string   `xml:"KvkNr"`
 }
 
-type CostCenter_GetList struct {
-	XMLName   xml.Name `xml:"CostCenter_GetList"`
-	XMLNS     string   `xml:"xmlns,attr"`
-	CompanyID int64    `xml:"CompanyId"`
+type List_GetAll struct {
+	XMLName xml.Name `xml:"List_GetAll"`
+	XMLNS   string   `xml:"xmlns,attr"`
 }
 
-func (service *Service) GetCostCenters(companyID int64) (*[]CostCenter, *errortools.Error) {
+func (service *Service) GetCompanies() (*[]Company, *errortools.Error) {
 	xmlns := "https://api.nmbrs.nl/soap/v3/CompanyService"
-	bodyModel := service.GetSOAPEnvelope(xmlns, CostCenter_GetList{
-		XMLNS:     xmlns,
-		CompanyID: companyID,
+	bodyModel := service.GetSOAPEnvelope(xmlns, List_GetAll{
+		XMLNS: xmlns,
 	})
 
 	requestConfig := go_http.RequestConfig{
@@ -57,7 +57,7 @@ func (service *Service) GetCostCenters(companyID int64) (*[]CostCenter, *errorto
 	}
 	defer response.Body.Close()
 
-	r := CostCenter_GetListResponse{}
+	r := List_GetAllResponse{}
 
 	err = xml.Unmarshal(body, &r)
 	if err != nil {
@@ -72,5 +72,5 @@ func (service *Service) GetCostCenters(companyID int64) (*[]CostCenter, *errorto
 		return nil, e
 	}
 
-	return &r.SoapBody.Response.Result.CostCenter, nil
+	return &r.SoapBody.Response.Result.Company, nil
 }

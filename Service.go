@@ -3,7 +3,6 @@ package nmbrs
 import (
 	"fmt"
 	"net/http"
-	"text/template"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -19,7 +18,6 @@ type Service struct {
 	username    string
 	domain      string
 	httpService *go_http.Service
-	templates   *template.Template
 }
 
 type ServiceConfig struct {
@@ -45,7 +43,11 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 		return nil, errortools.ErrorMessage("Domain not provided")
 	}
 
-	httpService, e := go_http.NewService(&go_http.ServiceConfig{})
+	accept := go_http.AcceptXML
+	httpServiceConfig := go_http.ServiceConfig{
+		Accept: &accept,
+	}
+	httpService, e := go_http.NewService(&httpServiceConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -55,7 +57,6 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 		username:    serviceConfig.Username,
 		domain:      serviceConfig.Domain,
 		httpService: httpService,
-		templates:   template.Must(template.ParseGlob("templates/*.xml")),
 	}, nil
 }
 
@@ -72,5 +73,11 @@ func (service *Service) url(path string) string {
 }
 
 func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return nil, nil, nil
+	// set content type header
+	header := http.Header{}
+	header.Set("Content-Type", "application/soap+xml; charset=utf-8")
+
+	requestConfig.NonDefaultHeaders = &header
+
+	return service.httpService.HTTPRequest(httpMethod, requestConfig)
 }
