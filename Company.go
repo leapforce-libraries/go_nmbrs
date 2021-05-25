@@ -21,8 +21,8 @@ type List_GetAllResponse struct {
 }
 
 type List_GetAllResult struct {
-	XMLName xml.Name  `xml:"List_GetAllResult"`
-	Company []Company `xml:"Company"`
+	XMLName xml.Name   `xml:"List_GetAllResult"`
+	Company *[]Company `xml:"Company"`
 }
 
 type Company struct {
@@ -50,6 +50,9 @@ func (service *Service) GetCompanies() (*[]Company, *errortools.Error) {
 		BodyModel: bodyModel,
 	}
 	_, response, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -72,5 +75,9 @@ func (service *Service) GetCompanies() (*[]Company, *errortools.Error) {
 		return nil, e
 	}
 
-	return &r.SoapBody.Response.Result.Company, nil
+	if r.SoapBody.Response.Result.Company == nil {
+		return nil, nil
+	}
+
+	return r.SoapBody.Response.Result.Company, nil
 }

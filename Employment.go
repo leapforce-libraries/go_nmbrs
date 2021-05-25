@@ -21,8 +21,8 @@ type Employment_GetAll_AllEmployeesByCompanyResponse struct {
 }
 
 type Employment_GetAll_AllEmployeesByCompanyResult struct {
-	XMLName                xml.Name                 `xml:"Employment_GetAll_AllEmployeesByCompanyResult"`
-	EmployeeEmploymentItem []EmployeeEmploymentItem `xml:"EmployeeEmploymentItem"`
+	XMLName                xml.Name                  `xml:"Employment_GetAll_AllEmployeesByCompanyResult"`
+	EmployeeEmploymentItem *[]EmployeeEmploymentItem `xml:"EmployeeEmploymentItem"`
 }
 
 type EmployeeEmploymentItem struct {
@@ -63,6 +63,9 @@ func (service *Service) GetEmployments(companyID int64) (*[]EmployeeEmploymentIt
 	}
 
 	_, response, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -85,5 +88,5 @@ func (service *Service) GetEmployments(companyID int64) (*[]EmployeeEmploymentIt
 		return nil, e
 	}
 
-	return &r.SoapBody.Response.Result.EmployeeEmploymentItem, nil
+	return r.SoapBody.Response.Result.EmployeeEmploymentItem, nil
 }

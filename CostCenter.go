@@ -21,8 +21,8 @@ type CostCenter_GetListResponse struct {
 }
 
 type CostCenter_GetListResult struct {
-	XMLName    xml.Name     `xml:"CostCenter_GetListResult"`
-	CostCenter []CostCenter `xml:"CostCenter"`
+	XMLName    xml.Name      `xml:"CostCenter_GetListResult"`
+	CostCenter *[]CostCenter `xml:"CostCenter"`
 }
 
 type CostCenter struct {
@@ -50,6 +50,9 @@ func (service *Service) GetCostCenters(companyID int64) (*[]CostCenter, *errorto
 		BodyModel: bodyModel,
 	}
 	_, response, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -72,5 +75,5 @@ func (service *Service) GetCostCenters(companyID int64) (*[]CostCenter, *errorto
 		return nil, e
 	}
 
-	return &r.SoapBody.Response.Result.CostCenter, nil
+	return r.SoapBody.Response.Result.CostCenter, nil
 }
