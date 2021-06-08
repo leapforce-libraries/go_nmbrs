@@ -48,6 +48,7 @@ type ContentReport struct {
 }
 
 const (
+	taskResultEnqueued  string = "Enqueued"
 	taskResultExecuting string = "Executing"
 	taskResultSuccess   string = "Success"
 	timeout             int64  = 30
@@ -120,11 +121,11 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 			return nil
 		}
 
-		if r.SoapBody.Response.Result.Status != taskResultExecuting {
+		if r.SoapBody.Response.Result.Status != taskResultEnqueued || r.SoapBody.Response.Result.Status != taskResultExecuting {
 			return errortools.ErrorMessagef("Reports_BackgroundTask_Result returned status %s", r.SoapBody.Response.Result.Status)
 		}
 
-		fmt.Printf("%v...", taskResultExecuting)
+		fmt.Printf("%v...", r.SoapBody.Response.Result.Status)
 		time.Sleep(time.Second * time.Duration(attempt))
 		attempt++
 	}

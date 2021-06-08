@@ -8,20 +8,21 @@ import (
 	go_http "github.com/leapforce-libraries/go_http"
 )
 
-type Contract_GetAll_AllEmployeesByCompanyResponse struct {
+type Contract_GetCurrentPeriodResponse struct {
 	XMLName  xml.Name `xml:"http://www.w3.org/2003/05/soap-envelope Envelope"`
 	SoapBody struct {
 		XMLName  xml.Name `xml:"Body"`
 		Response *struct {
-			XMLName              xml.Name                `xml:"Contract_GetAll_AllEmployeesByCompanyResponse"`
-			EmployeeContractItem *[]EmployeeContractItem `xml:"EmployeeContractItemGlobal"`
+			XMLName              xml.Name                `xml:"Contract_GetCurrentPeriodResponse"`
+			EmployeeContractItem *[]EmployeeContractItem `xml:"EmployeeContractItem"`
 		}
 		Fault *Fault
 	}
 }
 
+/*
 type EmployeeContractItem struct {
-	XMLName           xml.Name          `xml:"EmployeeContractItemGlobal"`
+	XMLName           xml.Name          `xml:"EmployeeContractItem"`
 	EmployeeID        int64             `xml:"EmployeeId"`
 	EmployeeContracts EmployeeContracts `xml:"EmployeeContracts"`
 }
@@ -44,19 +45,19 @@ type EmployeeContract struct {
 	PhaseClassification     int64    `xml:"PhaseClassification"`
 	WrittenContract         bool     `xml:"WrittenContract"`
 	HoursPerWeek            int64    `xml:"HoursPerWeek"`
+}*/
+
+type Contract_GetCurrentPeriod struct {
+	XMLName    xml.Name `xml:"Contract_GetCurrentPeriod"`
+	XMLNS      string   `xml:"xmlns,attr"`
+	EmployeeID int64    `xml:"EmployeeId"`
 }
 
-type Contract_GetAll_AllEmployeesByCompany struct {
-	XMLName   xml.Name `xml:"Contract_GetAll_AllEmployeesByCompany"`
-	XMLNS     string   `xml:"xmlns,attr"`
-	CompanyID int64    `xml:"CompanyID"`
-}
-
-func (service *Service) GetContracts(companyID int64) (*[]EmployeeContractItem, *errortools.Error) {
+func (service *Service) GetContractsCurrentPeriod(employeeID int64) (*[]EmployeeContractItem, *errortools.Error) {
 	xmlns := "https://api.nmbrs.nl/soap/v3/EmployeeService"
-	bodyModel := service.GetSOAPEnvelope(xmlns, Contract_GetAll_AllEmployeesByCompany{
-		XMLNS:     xmlns,
-		CompanyID: companyID,
+	bodyModel := service.GetSOAPEnvelope(xmlns, Contract_GetCurrentPeriod{
+		XMLNS:      xmlns,
+		EmployeeID: employeeID,
 	})
 
 	requestConfig := go_http.RequestConfig{
@@ -74,7 +75,7 @@ func (service *Service) GetContracts(companyID int64) (*[]EmployeeContractItem, 
 	}
 	defer response.Body.Close()
 
-	r := Contract_GetAll_AllEmployeesByCompanyResponse{}
+	r := Contract_GetCurrentPeriodResponse{}
 
 	err = xml.Unmarshal(body, &r)
 	if err != nil {
