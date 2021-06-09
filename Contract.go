@@ -13,11 +13,16 @@ type Contract_GetAll_AllEmployeesByCompanyResponse struct {
 	SoapBody struct {
 		XMLName  xml.Name `xml:"Body"`
 		Response *struct {
-			XMLName              xml.Name                `xml:"Contract_GetAll_AllEmployeesByCompanyResponse"`
-			EmployeeContractItem *[]EmployeeContractItem `xml:"EmployeeContractItemGlobal"`
+			XMLName                                     xml.Name                                    `xml:"Contract_GetAll_AllEmployeesByCompanyResponse"`
+			Contract_GetAll_AllEmployeesByCompanyResult Contract_GetAll_AllEmployeesByCompanyResult `xml:"Contract_GetAll_AllEmployeesByCompanyResult"`
 		}
 		Fault *Fault
 	}
+}
+
+type Contract_GetAll_AllEmployeesByCompanyResult struct {
+	XMLName                    xml.Name               `xml:"Contract_GetAll_AllEmployeesByCompanyResult"`
+	EmployeeContractItemGlobal []EmployeeContractItem `xml:"EmployeeContractItemGlobal"`
 }
 
 type EmployeeContractItem struct {
@@ -89,5 +94,5 @@ func (service *Service) GetContracts(companyID int64) (*[]EmployeeContractItem, 
 		return nil, e
 	}
 
-	return r.SoapBody.Response.EmployeeContractItem, nil
+	return &r.SoapBody.Response.Contract_GetAll_AllEmployeesByCompanyResult.EmployeeContractItemGlobal, nil
 }
