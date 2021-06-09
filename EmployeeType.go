@@ -37,13 +37,13 @@ type EmployeeType_GetList struct {
 }
 
 func (service *Service) GetEmployeeTypes() (*[]EmployeeType, *errortools.Error) {
-	xmlns := "https://api.nmbrs.nl/soap/v3/EmployeeTypeService"
+	xmlns := "https://api.nmbrs.nl/soap/v3/EmployeeService"
 	bodyModel := service.GetSOAPEnvelope(xmlns, EmployeeType_GetList{
 		XMLNS: xmlns,
 	})
 
 	requestConfig := go_http.RequestConfig{
-		URL:       service.url("EmployeeTypeService.asmx"),
+		URL:       service.url("EmployeeService.asmx"),
 		BodyModel: bodyModel,
 	}
 
