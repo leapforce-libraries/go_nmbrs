@@ -121,7 +121,7 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 			return nil
 		}
 
-		if r.SoapBody.Response.Result.Status != taskResultEnqueued || r.SoapBody.Response.Result.Status != taskResultExecuting {
+		if r.SoapBody.Response.Result.Status != taskResultEnqueued && r.SoapBody.Response.Result.Status != taskResultExecuting {
 			return errortools.ErrorMessagef("Reports_BackgroundTask_Result returned status %s", r.SoapBody.Response.Result.Status)
 		}
 
