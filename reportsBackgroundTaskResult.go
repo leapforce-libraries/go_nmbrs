@@ -51,7 +51,7 @@ const (
 	taskResultEnqueued  string = "Enqueued"
 	taskResultExecuting string = "Executing"
 	taskResultSuccess   string = "Success"
-	timeout             int64  = 30
+	timeout             int64  = 300
 )
 
 func (service *Service) getReportsBackgroundTaskResult(body interface{}, model interface{}) *errortools.Error {
@@ -130,5 +130,5 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 		attempt++
 	}
 
-	return errortools.ErrorMessagef("Reports_BackgroundTask_Result is still executing after %n seconds", timeout)
+	return errortools.ErrorMessagef("Reports_BackgroundTask_Result is still executing after %v seconds", timeout)
 }
