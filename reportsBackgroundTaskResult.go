@@ -51,7 +51,7 @@ const (
 	taskResultEnqueued  string = "Enqueued"
 	taskResultExecuting string = "Executing"
 	taskResultSuccess   string = "Success"
-	timeout             int64  = 300
+	timeout             int64  = 3600 // seconds
 )
 
 func (service *Service) getReportsBackgroundTaskResult(body interface{}, model interface{}) *errortools.Error {
@@ -78,6 +78,8 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 
 	now := time.Now()
 	attempt := 1
+	waitFor := 5
+	waitForMax := 60
 
 	for time.Now().Sub(now).Seconds() <= float64(timeout) {
 		_, response, e := service.post(&requestConfig)
@@ -125,8 +127,11 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 			return errortools.ErrorMessagef("Reports_BackgroundTask_Result returned status %s", r.SoapBody.Response.Result.Status)
 		}
 
-		fmt.Printf("%v...", r.SoapBody.Response.Result.Status)
-		time.Sleep(time.Second * time.Duration(attempt))
+		fmt.Printf("%s: %v...\n", time.Now().Format("15:04:05"), r.SoapBody.Response.Result.Status)
+		time.Sleep(time.Second * time.Duration(waitFor))
+		if waitFor < waitForMax {
+			waitFor *= 2
+		}
 		attempt++
 	}
 
