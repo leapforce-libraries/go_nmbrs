@@ -81,3 +81,19 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 
 	return service.httpService.HTTPRequest(httpMethod, requestConfig)
 }
+
+func (service *Service) APIName() string {
+	return apiName
+}
+
+func (service *Service) APIKey() string {
+	return service.apiToken
+}
+
+func (service *Service) APICallCount() int64 {
+	return service.httpService.RequestCount()
+}
+
+func (service *Service) APIReset() {
+	service.httpService.ResetRequestCount()
+}
