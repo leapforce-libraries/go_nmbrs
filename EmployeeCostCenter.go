@@ -3,6 +3,7 @@ package nmbrs
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -69,10 +70,11 @@ func (service *Service) GetEmployeeCostCenters(companyID int64, period int64, ye
 	})
 
 	requestConfig := go_http.RequestConfig{
+		Method:    http.MethodPost,
 		URL:       service.url("EmployeeService.asmx"),
 		BodyModel: bodyModel,
 	}
-	_, response, e := service.post(&requestConfig)
+	_, response, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

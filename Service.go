@@ -60,26 +60,18 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 	}, nil
 }
 
-func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodGet, requestConfig)
-}
-
-func (service *Service) post(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPost, requestConfig)
-}
-
 func (service *Service) url(path string) string {
 	return fmt.Sprintf("%s/%s", apiURL, path)
 }
 
-func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
 	// set content type header
 	header := http.Header{}
 	header.Set("Content-Type", "application/soap+xml; charset=utf-8")
 
 	requestConfig.NonDefaultHeaders = &header
 
-	return service.httpService.HTTPRequest(httpMethod, requestConfig)
+	return service.httpService.HTTPRequest(requestConfig)
 }
 
 func (service *Service) APIName() string {

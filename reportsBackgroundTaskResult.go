@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"strings"
 	"time"
 
@@ -72,6 +73,7 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 	})
 
 	requestConfig := go_http.RequestConfig{
+		Method:    http.MethodPost,
 		URL:       service.url("ReportService.asmx"),
 		BodyModel: bodyModel,
 	}
@@ -81,8 +83,8 @@ func (service *Service) getReportsBackgroundTaskResult(body interface{}, model i
 	waitFor := 5
 	waitForMax := 60
 
-	for time.Now().Sub(now).Seconds() <= float64(timeout) {
-		_, response, e := service.post(&requestConfig)
+	for time.Since(now).Seconds() <= float64(timeout) {
+		_, response, e := service.httpRequest(&requestConfig)
 		if e != nil {
 			return e
 		}
